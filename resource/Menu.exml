@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin width="96" height="171" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<e:Label id="profile" text="人物" y="20" x="20" name="profile"/>
+	<e:Label id="friend" text="好友" x="20" y="122" name="friend"/>
+	<e:Label id="setting" text="设置" x="20" y="71" name="setting"/>
+</e:Skin>
