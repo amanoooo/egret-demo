@@ -1,27 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" >
-	<e:Group left="0" right="0" top="0" bottom="0">
-		<e:Rect left="0" right="0" top="0" bottom="0" fillColor="0xf9a2a2" fillAlpha="0.5"/>
-		<e:Group id="old" horizontalCenter="0" verticalCenter="0">
-			<e:Label id="o1" text=" " y="0" left="0"/>
-			<e:Label id="o2" text="0" y="41" name="oldLife"/>
-			<e:Label id="o3" text="0" y="83" name="oldAttack"/>
-			<e:Label id="o4" text="0" y="124" name="oldDefense"/>
-			<e:Label id="o5" text="0" y="165" name="oldSpeed" left="0"/>
-		</e:Group>
-		<e:Group id="value" top="0" bottom="0" right="0">
-			<e:Label id="v1" text="0" name="point" scaleX="1" scaleY="1" horizontalCenter="0" verticalCenter="-82.5"/>
-			<e:Label id="v2" text="0" name="life" scaleX="1" scaleY="1" horizontalCenter="0" verticalCenter="-41.5"/>
-			<e:Label id="v3" text="0" name="attack" scaleX="1" scaleY="1" horizontalCenter="0" verticalCenter="0.5"/>
-			<e:Label id="v4" text="0" name="defense" scaleX="1" scaleY="1" horizontalCenter="0" verticalCenter="41.5"/>
-			<e:Label id="v5" text="0" name="speed" scaleX="1" scaleY="1" horizontalCenter="0" verticalCenter="82.5"/>
-		</e:Group>
-		<e:Group id="props" top="0" bottom="0" left="0">
-			<e:Label id="p1" text="剩余属性点:" scaleX="1" scaleY="1" y="0" x="0"/>
-			<e:Label id="p2" text="生命:" scaleX="1" scaleY="1" y="41" x="0"/>
-			<e:Label id="p3" text="攻击:" scaleX="1" scaleY="1" y="83" x="0"/>
-			<e:Label id="p4" text="防御:" scaleX="1" scaleY="1" y="124" x="0"/>
-			<e:Label id="p5" text="速度:" scaleX="1" scaleY="1" y="165" x="0"/>
+	<e:Rect left="0" right="0" top="0" bottom="0" fillColor="0xf9a2a2" fillAlpha="0.5"/>
+	<e:Group id="props" left="20" right="20" top="20" bottom="20" name="props" width="100%">
+		<e:layout>
+			<e:VerticalLayout/>
+		</e:layout>
+		<e:Group x="-5" y="2" width="100%" name="points">
+			<e:Label text="剩余属性点:" x="53" y="51"/>
+			<e:Label text="{data.points}" x="159" y="57"/>
+			<e:layout>
+				<e:HorizontalLayout horizontalAlign="justify" paddingLeft="0" paddingRight="0"/>
+			</e:layout>
 		</e:Group>
 	</e:Group>
 </e:Skin>
