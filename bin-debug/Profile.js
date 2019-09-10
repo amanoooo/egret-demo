@@ -48,6 +48,7 @@ var Profile = (function (_super) {
     }
     Profile.prototype.show = function (stage) {
         var panel = new eui.Panel();
+        panel['data'] = { points: this.points };
         panel.skinName = "resource/Profile.exml";
         panel.horizontalCenter = 0;
         panel.verticalCenter = 0;
@@ -55,9 +56,6 @@ var Profile = (function (_super) {
         // panel.percentHeight = 50
         console.log('panel', panel);
         var propsGroup = panel.getChildByName('props');
-        var points = propsGroup.getChildByName('points');
-        console.log('points', points);
-        points['data'] = { points: 10 };
         console.log('propsGroup', propsGroup);
         for (var i = 0; i < keys.length; i++) {
             var item = new eui.Component();
@@ -74,11 +72,13 @@ var Profile = (function (_super) {
         var _a = e.target.name.split('-'), name = _a[0], action = _a[1];
         if (keys.indexOf(name) > -1) {
             console.log(name, action);
-            if (action === 'plus') {
+            if (action === 'plus' && this.points > 0) {
                 data[name].point++;
+                this.points--;
             }
-            else {
+            else if (action === 'minus' && data[name].point > 0) {
                 data[name].point--;
+                this.points++;
             }
         }
     };

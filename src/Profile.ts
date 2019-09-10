@@ -40,6 +40,7 @@ class Profile extends egret.Sprite {
     public show(stage) {
 
         let panel = new eui.Panel();
+        panel['data'] = { points: this.points }
         panel.skinName = "resource/Profile.exml"
         panel.horizontalCenter = 0;
         panel.verticalCenter = 0;
@@ -51,10 +52,7 @@ class Profile extends egret.Sprite {
 
 
         const propsGroup = panel.getChildByName('props') as eui.Group
-        const points = propsGroup.getChildByName('points')
-        console.log('points', points);
-        
-        points['data'] = { points: 10 }
+
         console.log('propsGroup', propsGroup);
 
 
@@ -78,10 +76,12 @@ class Profile extends egret.Sprite {
         const [name, action] = e.target.name.split('-')
         if (keys.indexOf(name) > -1) {
             console.log(name, action);
-            if (action === 'plus') {
+            if (action === 'plus' && this.points > 0) {
                 data[name].point++
-            } else {
+                this.points--
+            } else if (action === 'minus' && data[name].point > 0) {
                 data[name].point--
+                this.points++
             }
         }
     }

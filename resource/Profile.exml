@@ -7,7 +7,7 @@
 		</e:layout>
 		<e:Group x="-5" y="2" width="100%" name="points">
 			<e:Label text="剩余属性点:" x="53" y="51"/>
-			<e:Label text="{data.points}" x="159" y="57"/>
+			<e:Label text="{data.points}" x="159" y="57" right="0"/>
 			<e:layout>
 				<e:HorizontalLayout horizontalAlign="justify" paddingLeft="0" paddingRight="0"/>
 			</e:layout>
