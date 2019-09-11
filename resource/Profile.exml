@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" xmlns:ns1="*" >
-	<e:Rect left="-1" right="1" top="0" bottom="0" fillAlpha="0.5" x="33" y="30" scaleX="1" scaleY="1" fillColor="0xeaf4fc" alpha="0.8"/>
+	<e:Rect left="-1" right="1" top="0" bottom="0" fillAlpha="0.5" x="33" y="30" scaleX="1" scaleY="1" fillColor="0xeaf4fc" alpha="1"/>
 	<e:Group id="header" scaleX="1" scaleY="1" left="0" right="0" top="0">
 		<e:Label id="title" scaleX="1" scaleY="1" verticalAlign="middle" textAlign="center" name="close" top="0" bottom="0" height="60" text="{data.nick}" bold="true" left="20" textColor="0x38b48b"/>
 	</e:Group>

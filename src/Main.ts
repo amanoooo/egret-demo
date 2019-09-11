@@ -27,33 +27,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////
 
-// /<reference path="../libsrc/src/TMXTilemap.ts" />
-// /<reference path="../libsrc/src/utils/Base64.ts" />
-// /<reference path="../libsrc/src/utils/TMXUtils.ts" />
-// /<reference path="../libsrc/src/tileset/TMXTileset.ts" />
-// /<reference path="../libsrc/src/tileset/TMXTilesetGroup.ts" />
-// /<reference path="../libsrc/src/tile/TMXTile.ts" />
-// /<reference path="../libsrc/src/shape/Ellipse.ts" />
-// /<reference path="../libsrc/src/shape/Polygon.ts" />
-// /<reference path="../libsrc/src/shape/PolyLine.ts" />
-// /<reference path="../libsrc/src/render/TMXRenderer.ts" />
-// /<reference path="../libsrc/src/render/TMXOrthogonalRenderer.ts" />
-// /<reference path="../libsrc/src/render/TMXHexagonalRenderer.ts" />
-// /<reference path="../libsrc/src/render/TMXIsometricRenderer.ts" />
-// /<reference path="../libsrc/src/property/TMXProperty.ts" />
-// /<reference path="../libsrc/src/object/TMXImage.ts" />
-// /<reference path="../libsrc/src/object/TMXObject.ts" />
-// /<reference path="../libsrc/src/object/TMXObjectGroup.ts" />
-// /<reference path="../libsrc/src/layer/ILayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXColorLayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXImageLayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXLayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXLayerBase.ts" />
-// /<reference path="../libsrc/src/events/TMXImageLoadEvent.ts" />
-// /<reference path="../libsrc/src/const/TMXConstants.ts" />
-// /<reference path="../libsrc/src/animation/TMXAnimation.ts" />
-// /<reference path="../libsrc/src/animation/TMXAnimationFrame.ts" />
-
 ///<reference path="../libsrc/bin/tiled/tiled.d.ts" />
 
 const url = "demo1.tmx";
@@ -61,7 +34,8 @@ const url = "demo1.tmx";
 
 class Main extends eui.UILayer {
 
-
+    stepSize: number = 32
+    map: tiled.TMXTilemap
     protected createChildren(): void {
         super.createChildren();
 
@@ -97,24 +71,38 @@ class Main extends eui.UILayer {
         const userInfo = await platform.getUserInfo();
         console.log(userInfo);
 
-
-        console.log('this0 ', this);
-
-        setTimeout(() => {
-            console.log('this', this);
-
-            var a = this.stage.getChildAt(0)
-            // var b = this.getChildAt(1)
-            // var c = this.getChildAt(2)
-            console.log('a', a);
-            // console.log('b', b);
-            // console.log(c);
-        }, 3 * 1000);
+        const kb = new KeyBoard();
+        //添加监听事件
+        kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
 
 
     }
+    onkeydown(event: egret.Event) {
+
+        const key = event.data.length === 1 ? event.data[0] : 'error'
+        switch (key) {
+            case 'up': {
+                this.map.y -= this.stepSize
+                break
+            }
+            case 'down': {
+                this.map.y += this.stepSize
+                break
+            }
+            case 'left': {
+                this.map.x -= this.stepSize
+                break
+            }
+            case 'right': {
+                this.map.x += this.stepSize
+                break
+            }
+            default:
+                break
+        }
+    }
     loadMap() {
-        console.log(5)
+        console.log(6)
         const request = new egret.HttpRequest();
         request.once(egret.Event.COMPLETE, this.onMapComplete, this);
         request.open(url, egret.HttpMethod.GET);
@@ -124,14 +112,21 @@ class Main extends eui.UILayer {
         var data: any = egret.XML.parse(event.currentTarget.response);
         console.log('this.stage.width, this.stage.height', this.stage.stageWidth, this.stage.stageHeight);
 
-        var tmxTileMap: tiled.TMXTilemap = new tiled.TMXTilemap(this.stage.stageWidth, this.stage.stageHeight, data, url);
-        tmxTileMap.render()
-        tmxTileMap.zIndex = -1
+        this.map = new tiled.TMXTilemap(50 * 32, 50 * 32, data, url);
+        this.map.render()
+        console.log('this.map', this.map);
+        // this.map.touchEnabled = true
+        // this.map.addEventListener(egret.TouchEvent.TOUCH_TAP, this.move, this);
 
-        this.addChild(tmxTileMap);
-        console.log('tmxTileMap', tmxTileMap, this);
+        this.addChild(this.map)
+        this.setChildIndex(this.map, 0)
     }
+    // private move(event: egret.TouchEvent) {
+    //     console.log('event.target', event.target);
 
+    //     event.target.x -= 5;
+    //     event.target.y -= 5;
+    // }
     private async loadResource() {
         try {
             const loadingView = new LoadingUI();
@@ -158,7 +153,6 @@ class Main extends eui.UILayer {
         })
     }
 
-    private textfield: egret.TextField;
     private addMenu() {
         const menu = new eui.Panel()
         menu.skinName = "resource/Menu.exml";
@@ -171,16 +165,13 @@ class Main extends eui.UILayer {
     private onMenuClick(e) {
         switch (e.target.name) {
             case 'setting': {
-                console.log('setting')
                 break
             }
             case 'profile': {
-                console.log('profile')
                 new Profile().show(this)
                 break
             }
             case 'friend': {
-                console.log('friend')
                 break
             }
             default:
