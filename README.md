@@ -6,7 +6,6 @@
 build  
 ```
 egret build -e
-
 ```
 start  
 ```
