@@ -29,8 +29,14 @@
 
 ///<reference path="../libsrc/bin/tiled/tiled.d.ts" />
 
-const url = "demo1.tmx";
 
+
+const maps = [
+    ['1-1.tmx', '1-2.tmx', '1-3.tmx'],
+    ['2-1.tmx', '2-2.tmx', '2-3.tmx'],
+    ['3-1.tmx', '3-2.tmx', '3-3.tmx'],
+]
+const url = maps[0][0];
 
 class Main extends eui.UILayer {
 
@@ -74,7 +80,6 @@ class Main extends eui.UILayer {
         const kb = new KeyBoard();
         //添加监听事件
         kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
-
 
     }
     onkeydown(event: egret.Event) {
