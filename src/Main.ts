@@ -71,14 +71,14 @@ class Main extends eui.UILayer {
 
     private async runGame() {
         await this.loadResource()
-        this.loadMap()
-        this.addMenu()
+        // this.loadMap()
+        // this.addMenu()
         await platform.login();
         const userInfo = await platform.getUserInfo();
         console.log(userInfo);
+        new Hero().addToStage(this)
 
         const kb = new KeyBoard();
-        //添加监听事件
         kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
 
     }
