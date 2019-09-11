@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<e:Skin xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" >
-	<e:Rect left="0" right="0" top="0" bottom="0" fillColor="0xf9a2a2" fillAlpha="0.5"/>
-	<e:Group id="props" left="20" right="20" top="20" bottom="20" name="props" width="100%">
+<e:Skin xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" xmlns:ns1="*" >
+	<e:Rect left="-1" right="1" top="0" bottom="0" fillAlpha="0.5" x="33" y="30" scaleX="1" scaleY="1" fillColor="0xeaf4fc" alpha="0.8"/>
+	<e:Group id="header" scaleX="1" scaleY="1" left="0" right="0" top="0">
+		<e:Label id="title" scaleX="1" scaleY="1" verticalAlign="middle" textAlign="center" name="close" top="0" bottom="0" height="60" text="{data.nick}" bold="true" left="20" textColor="0x38b48b"/>
+	</e:Group>
+	<e:Group id="props" left="20" right="20" name="props" width="100%" x="53" y="70" scaleX="1" scaleY="1" top="60" bottom="80">
 		<e:layout>
-			<e:VerticalLayout/>
+		<e:VerticalLayout horizontalAlign="right"/>
 		</e:layout>
-		<e:Group x="-5" y="2" width="100%" name="points">
-			<e:Label text="剩余属性点:" x="53" y="51"/>
-			<e:Label text="{data.points}" x="159" y="57" right="0"/>
-			<e:layout>
-				<e:HorizontalLayout horizontalAlign="justify" paddingLeft="0" paddingRight="0"/>
-			</e:layout>
+		<e:Group id="points" x="-5" y="2" width="100%" name="points">
+		<e:Label text="剩余属性点:" x="53" y="51"/>
+		<e:Label text="{data.points}" x="159" y="57" right="0"/>
+		<e:layout>
+			<e:HorizontalLayout horizontalAlign="justify" paddingLeft="0" paddingRight="0"/>
+		</e:layout>
 		</e:Group>
+	</e:Group>
+	<e:Group id="bottom" height="80" left="20" right="20" bottom="0" name="bottom">
+		<e:Label id="confirm" text="确认" verticalCenter="0" right="253" backgroundColor="0x38b48b" background="true" size="25" height="40" width="100" textAlign="center" verticalAlign="middle" name="confirm"/>
+		<e:Label id="cancel" text="取消" verticalCenter="0" left="232" backgroundColor="0xffffff" background="true" height="40" size="25" width="100" verticalAlign="middle" textAlign="center" border="true" borderColor="0x38b48b" name="cancel" textColor="0x38b48b"/>
+		<e:layout>
+			<e:HorizontalLayout horizontalAlign="left" verticalAlign="middle" gap="20"/>
+		</e:layout>
 	</e:Group>
 </e:Skin>

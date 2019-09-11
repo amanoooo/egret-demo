@@ -44,9 +44,9 @@ var AssetAdapter = (function () {
             compFunc.call(thisObject, data, source);
         }
         if (RES.hasRes(source)) {
-            var data_1 = RES.getRes(source);
-            if (data_1) {
-                onGetRes(data_1);
+            var data = RES.getRes(source);
+            if (data) {
+                onGetRes(data);
             }
             else {
                 RES.getResAsync(source, onGetRes, this);
