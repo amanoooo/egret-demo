@@ -23,6 +23,10 @@
     },
     {
       "name": "promise"
+    },
+    {
+      "name": "tiled",
+      "path": "libsrc"
     }
   ]
 }

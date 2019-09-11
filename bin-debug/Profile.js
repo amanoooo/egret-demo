@@ -69,22 +69,17 @@ var Profile = (function (_super) {
         panel.verticalCenter = 0;
         panel.percentWidth = 80;
         // panel.percentHeight = 50
-        console.log('panel', panel);
         var propsGroup = panel.getChildByName('props');
         var bottomGroup = panel.getChildByName('bottom');
-        console.log('propsGroup', propsGroup);
         for (var i = 0; i < this.keys.length; i++) {
             var item = new eui.Component();
             item.skinName = 'resource/ProfileItem.exml';
             item.percentWidth = 100;
             item['data'] = this.data[this.keys[i]];
-            console.log('item', item);
             propsGroup.addChild(item);
         }
         propsGroup.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onPointClick, this);
-        console.log('bottomGroup', bottomGroup);
         var cancel = bottomGroup.getChildByName('cancel');
-        console.log('cancel', cancel);
         var confirm = bottomGroup.getChildByName('confirm');
         cancel.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onCancelClick, this);
         confirm.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onConfirmClick, this);
@@ -109,11 +104,9 @@ var Profile = (function (_super) {
         }
     };
     Profile.prototype.onCancelClick = function (e) {
-        console.log('cancel');
         this.panel.close();
     };
     Profile.prototype.onConfirmClick = function (e) {
-        console.log('confirm');
         this.panel.close();
     };
     return Profile;

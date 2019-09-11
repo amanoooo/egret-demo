@@ -63,14 +63,9 @@ class Profile extends egret.Sprite {
         panel.percentWidth = 80
         // panel.percentHeight = 50
 
-        console.log('panel', panel)
-
-
 
         const propsGroup = panel.getChildByName('props') as eui.Group
         const bottomGroup = panel.getChildByName('bottom') as eui.Group
-
-        console.log('propsGroup', propsGroup);
 
 
         for (var i = 0; i < this.keys.length; i++) {
@@ -78,17 +73,12 @@ class Profile extends egret.Sprite {
             item.skinName = 'resource/ProfileItem.exml'
             item.percentWidth = 100
             item['data'] = this.data[this.keys[i]]
-            console.log('item', item);
 
             propsGroup.addChild(item)
         }
         propsGroup.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onPointClick, this);
 
-        console.log('bottomGroup', bottomGroup);
-
         const cancel = bottomGroup.getChildByName('cancel')
-        console.log('cancel', cancel);
-
         const confirm = bottomGroup.getChildByName('confirm')
         cancel.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onCancelClick, this);
         confirm.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onConfirmClick, this);
@@ -117,11 +107,9 @@ class Profile extends egret.Sprite {
         }
     }
     private onCancelClick(e) {
-        console.log('cancel');
         this.panel.close()
     }
     private onConfirmClick(e) {
-        console.log('confirm');
         this.panel.close()
     }
 }
