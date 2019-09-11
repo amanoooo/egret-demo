@@ -71,33 +71,32 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// /<reference path="../libsrc/src/TMXTilemap.ts" />
-// /<reference path="../libsrc/src/utils/Base64.ts" />
-// /<reference path="../libsrc/src/utils/TMXUtils.ts" />
-// /<reference path="../libsrc/src/tileset/TMXTileset.ts" />
-// /<reference path="../libsrc/src/tileset/TMXTilesetGroup.ts" />
-// /<reference path="../libsrc/src/tile/TMXTile.ts" />
-// /<reference path="../libsrc/src/shape/Ellipse.ts" />
-// /<reference path="../libsrc/src/shape/Polygon.ts" />
-// /<reference path="../libsrc/src/shape/PolyLine.ts" />
-// /<reference path="../libsrc/src/render/TMXRenderer.ts" />
-// /<reference path="../libsrc/src/render/TMXOrthogonalRenderer.ts" />
-// /<reference path="../libsrc/src/render/TMXHexagonalRenderer.ts" />
-// /<reference path="../libsrc/src/render/TMXIsometricRenderer.ts" />
-// /<reference path="../libsrc/src/property/TMXProperty.ts" />
-// /<reference path="../libsrc/src/object/TMXImage.ts" />
-// /<reference path="../libsrc/src/object/TMXObject.ts" />
-// /<reference path="../libsrc/src/object/TMXObjectGroup.ts" />
-// /<reference path="../libsrc/src/layer/ILayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXColorLayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXImageLayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXLayer.ts" />
-// /<reference path="../libsrc/src/layer/TMXLayerBase.ts" />
-// /<reference path="../libsrc/src/events/TMXImageLoadEvent.ts" />
-// /<reference path="../libsrc/src/const/TMXConstants.ts" />
-// /<reference path="../libsrc/src/animation/TMXAnimation.ts" />
-// /<reference path="../libsrc/src/animation/TMXAnimationFrame.ts" />
-///<reference path="../libsrc/bin/tiled/tiled.d.ts" />
+///<reference path="../libsrc/src/TMXTilemap.ts" />
+///<reference path="../libsrc/src/utils/Base64.ts" />
+///<reference path="../libsrc/src/utils/TMXUtils.ts" />
+///<reference path="../libsrc/src/tileset/TMXTileset.ts" />
+///<reference path="../libsrc/src/tileset/TMXTilesetGroup.ts" />
+///<reference path="../libsrc/src/tile/TMXTile.ts" />
+///<reference path="../libsrc/src/shape/Ellipse.ts" />
+///<reference path="../libsrc/src/shape/Polygon.ts" />
+///<reference path="../libsrc/src/shape/PolyLine.ts" />
+///<reference path="../libsrc/src/render/TMXRenderer.ts" />
+///<reference path="../libsrc/src/render/TMXOrthogonalRenderer.ts" />
+///<reference path="../libsrc/src/render/TMXHexagonalRenderer.ts" />
+///<reference path="../libsrc/src/render/TMXIsometricRenderer.ts" />
+///<reference path="../libsrc/src/property/TMXProperty.ts" />
+///<reference path="../libsrc/src/object/TMXImage.ts" />
+///<reference path="../libsrc/src/object/TMXObject.ts" />
+///<reference path="../libsrc/src/object/TMXObjectGroup.ts" />
+///<reference path="../libsrc/src/layer/ILayer.ts" />
+///<reference path="../libsrc/src/layer/TMXColorLayer.ts" />
+///<reference path="../libsrc/src/layer/TMXImageLayer.ts" />
+///<reference path="../libsrc/src/layer/TMXLayer.ts" />
+///<reference path="../libsrc/src/layer/TMXLayerBase.ts" />
+///<reference path="../libsrc/src/events/TMXImageLoadEvent.ts" />
+///<reference path="../libsrc/src/const/TMXConstants.ts" />
+///<reference path="../libsrc/src/animation/TMXAnimation.ts" />
+///<reference path="../libsrc/src/animation/TMXAnimationFrame.ts" />
 var url = "demo1.tmx";
 var Main = (function (_super) {
     __extends(Main, _super);
@@ -158,7 +157,7 @@ var Main = (function (_super) {
         });
     };
     Main.prototype.loadMap = function () {
-        console.log(5);
+        console.log(4);
         var request = new egret.HttpRequest();
         request.once(egret.Event.COMPLETE, this.onMapComplete, this);
         request.open(url, egret.HttpMethod.GET);

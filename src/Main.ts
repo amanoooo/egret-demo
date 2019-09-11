@@ -27,6 +27,35 @@
 //
 //////////////////////////////////////////////////////////////////////////////////////
 
+// /<reference path="../libsrc/src/TMXTilemap.ts" />
+// /<reference path="../libsrc/src/utils/Base64.ts" />
+// /<reference path="../libsrc/src/utils/TMXUtils.ts" />
+// /<reference path="../libsrc/src/tileset/TMXTileset.ts" />
+// /<reference path="../libsrc/src/tileset/TMXTilesetGroup.ts" />
+// /<reference path="../libsrc/src/tile/TMXTile.ts" />
+// /<reference path="../libsrc/src/shape/Ellipse.ts" />
+// /<reference path="../libsrc/src/shape/Polygon.ts" />
+// /<reference path="../libsrc/src/shape/PolyLine.ts" />
+// /<reference path="../libsrc/src/render/TMXRenderer.ts" />
+// /<reference path="../libsrc/src/render/TMXOrthogonalRenderer.ts" />
+// /<reference path="../libsrc/src/render/TMXHexagonalRenderer.ts" />
+// /<reference path="../libsrc/src/render/TMXIsometricRenderer.ts" />
+// /<reference path="../libsrc/src/property/TMXProperty.ts" />
+// /<reference path="../libsrc/src/object/TMXImage.ts" />
+// /<reference path="../libsrc/src/object/TMXObject.ts" />
+// /<reference path="../libsrc/src/object/TMXObjectGroup.ts" />
+// /<reference path="../libsrc/src/layer/ILayer.ts" />
+// /<reference path="../libsrc/src/layer/TMXColorLayer.ts" />
+// /<reference path="../libsrc/src/layer/TMXImageLayer.ts" />
+// /<reference path="../libsrc/src/layer/TMXLayer.ts" />
+// /<reference path="../libsrc/src/layer/TMXLayerBase.ts" />
+// /<reference path="../libsrc/src/events/TMXImageLoadEvent.ts" />
+// /<reference path="../libsrc/src/const/TMXConstants.ts" />
+// /<reference path="../libsrc/src/animation/TMXAnimation.ts" />
+// /<reference path="../libsrc/src/animation/TMXAnimationFrame.ts" />
+
+///<reference path="../libsrc/bin/tiled/tiled.d.ts" />
+
 const url = "demo1.tmx";
 
 
@@ -62,36 +91,45 @@ class Main extends eui.UILayer {
 
     private async runGame() {
         await this.loadResource()
-        this.createGameScene();
+        this.loadMap()
         this.addMenu()
-        // const result = await RES.getResAsync("description_json")
-        // this.startAnimation(result);
         await platform.login();
         const userInfo = await platform.getUserInfo();
         console.log(userInfo);
 
-        this.loadMap()
+
+        console.log('this0 ', this);
+
+        setTimeout(() => {
+            console.log('this', this);
+
+            var a = this.stage.getChildAt(0)
+            // var b = this.getChildAt(1)
+            // var c = this.getChildAt(2)
+            console.log('a', a);
+            // console.log('b', b);
+            // console.log(c);
+        }, 3 * 1000);
+
+
     }
     loadMap() {
-        console.log(1)
-        /*初始化资源加载路径*/
-        const url = "demo1.tmx";
-        /*初始化请求*/
+        console.log(5)
         const request = new egret.HttpRequest();
-        /*监听资源加载完成事件*/
         request.once(egret.Event.COMPLETE, this.onMapComplete, this);
-        /*发送请求*/
         request.open(url, egret.HttpMethod.GET);
         request.send();
     }
     onMapComplete(event: egret.Event) {
-        /*获取到地图数据*/
         var data: any = egret.XML.parse(event.currentTarget.response);
-        /*初始化地图*/
-        var tmxTileMap: tiled.TMXTilemap = new tiled.TMXTilemap(2000, 2000, data, url);
-        tmxTileMap.render();
-        /*将地图添加到显示列表*/
+        console.log('this.stage.width, this.stage.height', this.stage.stageWidth, this.stage.stageHeight);
+
+        var tmxTileMap: tiled.TMXTilemap = new tiled.TMXTilemap(this.stage.stageWidth, this.stage.stageHeight, data, url);
+        tmxTileMap.render()
+        tmxTileMap.zIndex = -1
+
         this.addChild(tmxTileMap);
+        console.log('tmxTileMap', tmxTileMap, this);
     }
 
     private async loadResource() {
@@ -121,19 +159,14 @@ class Main extends eui.UILayer {
     }
 
     private textfield: egret.TextField;
-    /**
-     * 创建场景界面
-     * Create scene interface
-     */
-    protected createGameScene(): void {
-        let stageW = this.stage.stageWidth;
-        let stageH = this.stage.stageHeight;
-    }
     private addMenu() {
         const menu = new eui.Panel()
         menu.skinName = "resource/Menu.exml";
+        menu.left = 20
+        menu.bottom = 20
         this.addChild(menu);
         menu.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onMenuClick, this);
+
     }
     private onMenuClick(e) {
         switch (e.target.name) {

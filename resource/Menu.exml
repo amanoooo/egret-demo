@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<e:Skin width="96" height="171" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
-	<e:Label id="profile" text="人物" y="20" x="20" name="profile"/>
-	<e:Label id="friend" text="好友" x="20" y="122" name="friend"/>
-	<e:Label id="setting" text="设置" x="20" y="71" name="setting"/>
+<e:Skin xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<e:Group left="0" bottom="0" height="100%">
+		<e:Label id="profile" text="人物" y="-131" x="-20" name="profile" scaleX="1" scaleY="1"/>
+		<e:Label id="friend" text="好友" x="0" y="-29" name="friend" scaleX="1" scaleY="1"/>
+		<e:Label id="setting" text="设置" x="0" y="-80" name="setting" scaleX="1" scaleY="1"/>
+		<e:layout>
+			<e:VerticalLayout horizontalAlign="left" verticalAlign="justify" gap="15"/>
+		</e:layout>
+	</e:Group>
 </e:Skin>
