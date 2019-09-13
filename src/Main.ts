@@ -36,7 +36,8 @@ const maps = [
     ['2-1.tmx', '2-2.tmx', '2-3.tmx'],
     ['3-1.tmx', '3-2.tmx', '3-3.tmx'],
 ]
-const url = maps[0][0];
+const url = maps[0][0]
+
 
 class Main extends eui.UILayer {
 
@@ -71,8 +72,9 @@ class Main extends eui.UILayer {
 
     private async runGame() {
         await this.loadResource()
-        // this.loadMap()
-        // this.addMenu()
+        this.init()
+        this.loadMap()
+        this.addMenu()
         await platform.login();
         const userInfo = await platform.getUserInfo();
         console.log(userInfo);
@@ -82,24 +84,53 @@ class Main extends eui.UILayer {
         kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
 
     }
+    init() {
+        const patchX = this.stage.stageWidth / 32 / 2
+        const patchY = this.stage.stageHeight / 32 / 2
+
+        posInfo.patch = {
+            x: patchX,
+            y: patchY
+        }
+        posInfo.screen = {
+            x: this.stage.stageWidth,
+            y: this.stage.stageHeight
+        }
+        posInfo.user = {
+            x: 0,
+            y: 0
+        }
+        calcPos()
+
+    }
     onkeydown(event: egret.Event) {
 
         const key = event.data.length === 1 ? event.data[0] : 'error'
         switch (key) {
             case 'up': {
-                this.map.y -= this.stepSize
+                posInfo.user.y++
+                calcPos()
+
+                console.log('posInfo.map', posInfo.map);
+                this.map.y = posInfo.map.y
                 break
             }
             case 'down': {
-                this.map.y += this.stepSize
+                posInfo.user.y--
+                calcPos()
+                this.map.y = posInfo.map.y
                 break
             }
             case 'left': {
-                this.map.x -= this.stepSize
+                posInfo.user.x++
+                this.map.x = posInfo.map.x
+                calcPos()
                 break
             }
             case 'right': {
-                this.map.x += this.stepSize
+                posInfo.user.x--
+                calcPos()
+                this.map.x = posInfo.map.x
                 break
             }
             default:
@@ -117,7 +148,11 @@ class Main extends eui.UILayer {
         var data: any = egret.XML.parse(event.currentTarget.response);
         console.log('this.stage.width, this.stage.height', this.stage.stageWidth, this.stage.stageHeight);
 
-        this.map = new tiled.TMXTilemap(50 * 32, 50 * 32, data, url);
+        this.map = new tiled.TMXTilemap(MAPSIDE * TILESIDE, MAPSIDE * TILESIDE, data, url);
+        this.map.x = posInfo.map.x
+        this.map.y = posInfo.map.y
+        // this.map.x = 0
+        // this.map.y = 0
         this.map.render()
         console.log('this.map', this.map);
         // this.map.touchEnabled = true
