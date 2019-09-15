@@ -30,19 +30,10 @@
 ///<reference path="../libsrc/bin/tiled/tiled.d.ts" />
 
 
-
-const maps = [
-    ['1-1.tmx', '1-2.tmx', '1-3.tmx'],
-    ['2-1.tmx', '2-2.tmx', '2-3.tmx'],
-    ['3-1.tmx', '3-2.tmx', '3-3.tmx'],
-]
-const url = maps[0][0]
-
-
 class Main extends eui.UILayer {
 
     stepSize: number = 32
-    map: tiled.TMXTilemap
+    map: Map = new Map()
     protected createChildren(): void {
         super.createChildren();
 
@@ -73,15 +64,16 @@ class Main extends eui.UILayer {
     private async runGame() {
         await this.loadResource()
         this.init()
-        this.loadMap()
+        this.map.loadMap(this)
+        this.map.cache2('cacheX')
+        this.map.cache2('cacheY')
+
+        new Hero().addToStage(this)
         this.addMenu()
+
         await platform.login();
         const userInfo = await platform.getUserInfo();
         console.log(userInfo);
-        new Hero().addToStage(this)
-
-        const kb = new KeyBoard();
-        kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
 
     }
     init() {
@@ -97,76 +89,13 @@ class Main extends eui.UILayer {
             y: this.stage.stageHeight
         }
         posInfo.user = {
-            x: 0,
-            y: 0
+            x: 51,
+            y: 51
         }
         calcPos()
 
     }
-    onkeydown(event: egret.Event) {
 
-        const key = event.data.length === 1 ? event.data[0] : 'error'
-        switch (key) {
-            case 'up': {
-                posInfo.user.y++
-                calcPos()
-
-                console.log('posInfo.map', posInfo.map);
-                this.map.y = posInfo.map.y
-                break
-            }
-            case 'down': {
-                posInfo.user.y--
-                calcPos()
-                this.map.y = posInfo.map.y
-                break
-            }
-            case 'left': {
-                posInfo.user.x++
-                this.map.x = posInfo.map.x
-                calcPos()
-                break
-            }
-            case 'right': {
-                posInfo.user.x--
-                calcPos()
-                this.map.x = posInfo.map.x
-                break
-            }
-            default:
-                break
-        }
-    }
-    loadMap() {
-        console.log(6)
-        const request = new egret.HttpRequest();
-        request.once(egret.Event.COMPLETE, this.onMapComplete, this);
-        request.open(url, egret.HttpMethod.GET);
-        request.send();
-    }
-    onMapComplete(event: egret.Event) {
-        var data: any = egret.XML.parse(event.currentTarget.response);
-        console.log('this.stage.width, this.stage.height', this.stage.stageWidth, this.stage.stageHeight);
-
-        this.map = new tiled.TMXTilemap(MAPSIDE * TILESIDE, MAPSIDE * TILESIDE, data, url);
-        this.map.x = posInfo.map.x
-        this.map.y = posInfo.map.y
-        // this.map.x = 0
-        // this.map.y = 0
-        this.map.render()
-        console.log('this.map', this.map);
-        // this.map.touchEnabled = true
-        // this.map.addEventListener(egret.TouchEvent.TOUCH_TAP, this.move, this);
-
-        this.addChild(this.map)
-        this.setChildIndex(this.map, 0)
-    }
-    // private move(event: egret.TouchEvent) {
-    //     console.log('event.target', event.target);
-
-    //     event.target.x -= 5;
-    //     event.target.y -= 5;
-    // }
     private async loadResource() {
         try {
             const loadingView = new LoadingUI();

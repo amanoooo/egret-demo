@@ -3,6 +3,7 @@ const DURATION = 200
 
 const MAPSIDE = 50
 const TILESIDE = 32
+const REGIONSIDE = 150
 
 
 declare namespace Pos {
@@ -10,32 +11,78 @@ declare namespace Pos {
         x: number,
         y: number
     }
+    type TildId = string | null // 1-1.tmx
+    interface TileIds {
+        self: TildId
+        right?: TildId
+        left?: TildId
+        up?: TildId
+        down?: TildId
+    }
+    type CacheMap = {
+        id: string,
+        refresh: boolean,
+    } & Region
 
     interface Info {
         screen: Region
         tile: Region
+        tileIds: TileIds
         region: Region
         user: Region
-        map: Region
         patch: Region
+        cachePatch: Region
+        cacheMapRight: Region | undefined
+        cacheMapLeft: Region | undefined
+        cacheMapUp: Region | undefined
+        cacheMapDown: Region | undefined
+        map: CacheMap
+        cacheX: CacheMap
+        cacheY: CacheMap
+        cacheZ: CacheMap
     }
 }
-const tile: Pos.Region = { x: 0, y: 0 }
-const region: Pos.Region = { x: 0, y: 0 }
-const user: Pos.Region = { x: 0, y: 0 }
-const map: Pos.Region = { x: 0, y: 0 }
-const patch: Pos.Region = { x: 0, y: 0 }
+var cacheZ: { id: string | undefined } & Pos.Region = {
+    id: '1',
+    x: 1,
+    y: 1
+}
 
-
+const initRegion = { x: 0, y: 0 }
 
 // should be number
 const posInfo: Pos.Info = {
-    patch,          // 修补坐标 should return -screen/2/32 ... 0 
+    patch: { x: 0, y: 0 },                      // 修补坐标 should return  0 ... screen/2/32 
     screen: { x: 0, y: 0 },
-    region,         // 上海的区域块坐标(后端返回) should return 0 ... 9
-    user,           // 区域块内的坐标(后端返回) return  0 ... 4999
-    tile,           // 用户在前端地图的坐标(由area坐标求模计算) shoudl return 0 ... 49
-    map,            // 地图坐标 should return -screen/2/32 ... screen/2/32
+    region: { x: 0, y: 0 },                     // 上海的区域块坐标(后端返回) should return 0 ... 9
+    user: { x: 0, y: 0 },                       // 区域块内的坐标(后端返回) return  0 ... 4999
+    tile: { x: 0, y: 0 },                       // 用户在前端地图的坐标(由 user 坐标求模计算) shoudl return 0 ... 49
+    tileIds: { self: '1-1.t' },                   // 后端的一个区域块对应的前端地图的id
+    cachePatch: { x: 0, y: 0 },                 // 缓存的偏移量
+    cacheMapRight: undefined,
+    cacheMapLeft: undefined,
+    cacheMapUp: undefined,
+    cacheMapDown: undefined,
+    map: {
+        id: undefined,
+        x: 0, y: 0,
+        refresh: false
+    },                                          // 地图坐标 should return -screen/2/32 ... screen/2/32
+    cacheX: {
+        id: undefined,
+        x: 0, y: 0,
+        refresh: false
+    },
+    cacheY: {
+        id: undefined,
+        x: 0, y: 0,
+        refresh: false
+    },
+    cacheZ: {
+        id: undefined,
+        x: 0, y: 0,
+        refresh: false
+    }
 }
 /**
  * 
@@ -45,22 +92,91 @@ function calcPos() {
         console.error('not init')
         return
     }
-    console.debug('user ', posInfo.user)
+    // console.debug('user ', posInfo.user)
 
-    posInfo.tile.x = posInfo.user.x % MAPSIDE
-    posInfo.tile.y = posInfo.user.y % MAPSIDE
-    console.debug('tile', posInfo.tile)
+    const tile = {
+        x: posInfo.user.x % MAPSIDE,
+        y: posInfo.user.y % MAPSIDE
+    }
+    posInfo.tile = tile
+    // console.debug('tile', tile)
 
     const patched = {
-        x: posInfo.tile.x + posInfo.patch.x,
-        y: posInfo.tile.y + posInfo.patch.y
+        x: -posInfo.tile.x + posInfo.patch.x,
+        y: -posInfo.tile.y + posInfo.patch.y
     }
-    console.debug('patched', patched)
-    const map = {
+
+
+    const idX = Math.floor(posInfo.user.x / MAPSIDE)
+    const idY = Math.floor(posInfo.user.y / MAPSIDE)
+    const self = `${idX}-${idY}.tmx`
+    console.debug('main id', self);
+    const tileIds: Pos.TileIds = { self }
+    tileIds.left = idX <= 0 ? undefined : `${idX - 1}-${idY}.tmx`
+    tileIds.right = (idX > REGIONSIDE / MAPSIDE - 1) ? undefined : `${idX + 1}-${idY}.tmx`
+    tileIds.up = idY <= 0 ? undefined : `${idX}-${idY - 1}.tmx`
+    tileIds.down = (idY >= REGIONSIDE / MAPSIDE - 1) ? undefined : `${idX}-${idY + 1}.tmx`
+    // // console.debug('tileIds', tileIds)
+    // posInfo.tileIds = tileIds
+
+
+    const refreshMain = posInfo.map.id !== self
+    const newMap = {
         x: patched.x * TILESIDE,
-        y: patched.y * TILESIDE
+        y: patched.y * TILESIDE,
+        id: self,
+        refresh: refreshMain
     }
-    console.debug('map', map)
-    posInfo.map = map
+    // console.debug('map', map)
+    posInfo.map = newMap
+
+    const newCacheX: Pos.CacheMap = {
+        id: undefined,
+        x: undefined,
+        y: undefined,
+        refresh: false
+    }
+    if (tile.x > MAPSIDE / 2) {
+        newCacheX.id = tileIds.right
+        newCacheX.x = newMap.x + MAPSIDE * TILESIDE
+        newCacheX.y = newMap.y
+    } else if (tile.x < MAPSIDE / 2) {
+        newCacheX.id = tileIds.left
+        newCacheX.x = newMap.x - MAPSIDE * TILESIDE
+        newCacheX.y = newMap.y
+    }
+    if (newCacheX.id !== posInfo.cacheX.id) {
+        newCacheX.refresh = true
+    } else {
+        newCacheX.refresh = false
+    }
+
+    posInfo.cacheX = newCacheX
+    console.log('newCacheX', newCacheX);
+
+
+    const newCacheY: Pos.CacheMap = {
+        id: undefined,
+        x: undefined,
+        y: undefined,
+        refresh: false
+    }
+    if (tile.y > MAPSIDE / 2) {
+        newCacheY.id = tileIds.down
+        newCacheY.x = newMap.x
+        newCacheY.y = newMap.y + MAPSIDE * TILESIDE
+    } else if (tile.y < MAPSIDE / 2) {
+        newCacheY.id = tileIds.up
+        newCacheY.x = newMap.x
+        newCacheY.y = newMap.y - MAPSIDE * TILESIDE
+    }
+    if (newCacheY.id !== posInfo.cacheY.id) {
+        newCacheY.refresh = true
+    }
+    posInfo.cacheY = newCacheY
+    console.log('newCacheY', newCacheY);
+
+
+
 
 }
