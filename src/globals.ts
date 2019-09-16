@@ -22,6 +22,7 @@ declare namespace Pos {
     type CacheMap = {
         id: string,
         refresh: boolean,
+        reserved: boolean
     } & Region
 
     interface Info {
@@ -30,11 +31,6 @@ declare namespace Pos {
         region: Region
         user: Region
         patch: Region
-        cachePatch: Region
-        cacheMapRight: Region | undefined
-        cacheMapLeft: Region | undefined
-        cacheMapUp: Region | undefined
-        cacheMapDown: Region | undefined
         map: CacheMap
         cacheX: CacheMap
         cacheY: CacheMap
@@ -56,30 +52,29 @@ const posInfo: Pos.Info = {
     region: { x: 0, y: 0 },                     // 上海的区域块坐标(后端返回) should return 0 ... 9
     user: { x: 0, y: 0 },                       // 区域块内的坐标(后端返回) return  0 ... 4999
     tile: { x: 0, y: 0 },                       // 用户在前端地图的坐标(由 user 坐标求模计算) shoudl return 0 ... 49
-    cachePatch: { x: 0, y: 0 },                 // 缓存的偏移量
-    cacheMapRight: undefined,
-    cacheMapLeft: undefined,
-    cacheMapUp: undefined,
-    cacheMapDown: undefined,
     map: {
         id: undefined,
         x: 0, y: 0,
-        refresh: false
+        refresh: false,
+        reserved: true
     },                                          // 地图坐标 should return -screen/2/32 ... screen/2/32
     cacheX: {
         id: undefined,
         x: 0, y: 0,
-        refresh: false
+        refresh: false,
+        reserved: false
     },
     cacheY: {
         id: undefined,
         x: 0, y: 0,
-        refresh: false
+        refresh: false,
+        reserved: false
     },
     cacheZ: {
         id: undefined,
         x: 0, y: 0,
-        refresh: false
+        refresh: false,
+        reserved: false
     }
 }
 /**
@@ -117,13 +112,20 @@ function calcPos() {
     // // console.debug('tileIds', tileIds)
     // posInfo.tileIds = tileIds
 
+    const lastdIds = {
+        [posInfo.map.id]: true,
+        [posInfo.cacheX.id]: true,
+        [posInfo.cacheY.id]: true,
+        [posInfo.cacheZ.id]: true,
+    }
 
     const refreshMain = posInfo.map.id !== self
     const newMap = {
         x: patched.x * TILESIDE,
         y: patched.y * TILESIDE,
         id: self,
-        refresh: refreshMain
+        refresh: refreshMain,
+        reserved: lastdIds[self]
     }
     // console.debug('map', map)
     posInfo.map = newMap
@@ -135,7 +137,8 @@ function calcPos() {
         id: undefined,
         x: undefined,
         y: undefined,
-        refresh: false
+        refresh: false,
+        reserved: false
     }
     if (tile.x > MAPSIDE / 2) {
         newCacheX.id = tileIds.right
@@ -146,6 +149,7 @@ function calcPos() {
         newCacheX.x = newMap.x - MAPSIDE * TILESIDE
         newCacheX.y = newMap.y
     }
+    newCacheX.reserved = lastdIds[newCacheX.id]
     if (newCacheX.id !== posInfo.cacheX.id) {
         newCacheX.refresh = true
     } else {
@@ -163,7 +167,8 @@ function calcPos() {
         id: undefined,
         x: undefined,
         y: undefined,
-        refresh: false
+        refresh: false,
+        reserved: false
     }
     if (tile.y > MAPSIDE / 2) {
         newCacheY.id = tileIds.down
@@ -174,6 +179,8 @@ function calcPos() {
         newCacheY.x = newMap.x
         newCacheY.y = newMap.y - MAPSIDE * TILESIDE
     }
+    newCacheY.reserved = lastdIds[newCacheY.id]
+
     if (newCacheY.id !== posInfo.cacheY.id) {
         newCacheY.refresh = true
     }
@@ -189,13 +196,15 @@ function calcPos() {
         id: undefined,
         x: undefined,
         y: undefined,
-        refresh: false
+        refresh: false,
+        reserved: false
     }
     if (newCacheX.id && newCacheY.id) {
-        newCacheZ.id = newCacheX.id.split('-')[0] +'-'+ newCacheY.id.split('-')[1]
+        newCacheZ.id = newCacheX.id.split('-')[0] + '-' + newCacheY.id.split('-')[1]
         newCacheZ.x = newCacheX.x
         newCacheZ.y = newCacheY.y
     }
+    newCacheZ.reserved = lastdIds[newCacheZ.id]
     if (newCacheZ.id !== posInfo.cacheZ.id) {
         newCacheZ.refresh = true
     } else {

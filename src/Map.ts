@@ -1,23 +1,16 @@
 
-type CacheTarget = 'cacheMapLeft' | 'cacheMapRight' | 'cacheMapUp' | 'cacheMapDown'
-function isTargetX(target: string) {
-    return ['cacheMapLeft', 'cacheMapRight'].indexOf(target) > -1
-}
-function isTargetY(target: string) {
-    return ['cacheMapUp', 'cacheMapDown'].indexOf(target) > -1
-}
 
 class Map {
     layer: eui.UILayer
-    map: tiled.TMXTilemap
-    cacheMapLeft: tiled.TMXTilemap
-    cacheMapRight: tiled.TMXTilemap
-    cacheMapUp: tiled.TMXTilemap
-    cacheMapDown: tiled.TMXTilemap
 
+    map: tiled.TMXTilemap
+    oldmap: tiled.TMXTilemap
     cacheX: tiled.TMXTilemap
     cacheY: tiled.TMXTilemap
     cacheZ: tiled.TMXTilemap
+    oldcacheX: tiled.TMXTilemap
+    oldcacheY: tiled.TMXTilemap
+    oldcacheZ: tiled.TMXTilemap
 
     lastReloadTime: number
 
@@ -35,9 +28,8 @@ class Map {
         this.map = new tiled.TMXTilemap(MAPSIDE * TILESIDE, MAPSIDE * TILESIDE, data, posInfo.map.id);
         this.map.x = posInfo.map.x
         this.map.y = posInfo.map.y
+        this.map.name = posInfo.map.id
         this.map.render()
-        // this.map.touchEnabled = true
-        // this.map.addEventListener(egret.TouchEvent.TOUCH_TAP, this.move, this);
 
         this.layer.addChild(this.map)
         this.layer.setChildIndex(this.map, 0)
@@ -47,45 +39,88 @@ class Map {
         kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
     }
 
-    reloadMainMap() {
-        const now = Date.now()
-        if(this.lastReloadTime && now -  this.lastReloadTime < 1000 * 3) {
-            console.log('throttle reloadMainMap');
-            return
-        }
-        if (posInfo.map.refresh && this.map) {
-            this.lastReloadTime = now
-            console.log('reloadMainMap');
-            this.map.destory()
-            this.loadMap(this.layer)
-        } else {
-            // console.log('jump main refresh');
+    destoryOldMap() {
+
+    }
+    reloadMainMap(target) {
+        if (posInfo.map.refresh && this[target] && (this[target].name === posInfo.map.id)) {
+            this.oldmap = this.map
+            this.map = this[target]
+            this.map.x = posInfo.map.x
+            this.map.y = posInfo.map.y
+
+            console.log('use %s as main map', target, );
         }
     }
-    cache2(target?: | 'cacheX' | 'cacheY' | 'cacheZ') {
-        if(!target) {
-            this.cache2('cacheX')
-            this.cache2('cacheY')
-            this.cache2('cacheZ')
-            return
+
+    cache2() {
+        this.reloadMainMap('cacheX')
+        this.reloadMainMap('cacheY')
+        this.reloadMainMap('cacheZ')
+
+
+        this.cache3('cacheX')
+        this.cache3('cacheY')
+        this.cache3('cacheZ')
+
+
+        this.oldmap = null
+        this.oldcacheX = null
+        this.oldcacheY = null
+        this.oldcacheZ = null
+    }
+    reloadCache(target, possibleTarget, mapInfo): boolean {
+        if (this[possibleTarget] && this[possibleTarget].name === mapInfo.id) {
+            this['old' + target] = this[target]
+            this[target] = this[possibleTarget]
+            console.log('use %s as %s cache', possibleTarget, target);
+            this[target].x = posInfo[target].x
+            this[target].y = posInfo[target].y
+            return true
         }
-        this.reloadMainMap()
+        return false
+    }
+    cache3(target: 'cacheX' | 'cacheY' | 'cacheZ') {
 
         const mapInfo = posInfo[target]
         // console.log('mapInfo', mapInfo);
 
-        if (posInfo[target].refresh) {
-            console.log('try destory', target);
+        if (mapInfo.refresh) {
+            console.log('%s refresh true', target);
             if (this[target]) {
-                this[target].destory()
-                console.log('destoryed')
+                if (posInfo[target].reserved) {
+                    console.log('skip destory %s', target)
+                } else {
+                    console.log('destory', target);
+                    this[target].destory()
+                }
             }
 
+            // 边界不渲染
             if (!mapInfo.id) {
-                console.log('do not cache due to ', target, mapInfo);
+                console.log('invalid %s id, skip cache', target);
                 return
             }
-            console.log('caching ', target, mapInfo.id);
+
+            console.log('try cache ', target, mapInfo.id);
+
+            let isSuccess = false
+            isSuccess = this.reloadCache(target, 'cacheX', mapInfo)
+            if (isSuccess) return
+            isSuccess = this.reloadCache(target, 'cacheY', mapInfo)
+            if (isSuccess) return
+            isSuccess = this.reloadCache(target, 'cacheZ', mapInfo)
+            if (isSuccess) return
+            isSuccess = this.reloadCache(target, 'oldcacheX', mapInfo)
+            if (isSuccess) return
+            isSuccess = this.reloadCache(target, 'oldcacheY', mapInfo)
+            if (isSuccess) return
+            isSuccess = this.reloadCache(target, 'oldcacheZ', mapInfo)
+            if (isSuccess) return
+            isSuccess = this.reloadCache(target, 'oldmap', mapInfo)
+            if (isSuccess) return
+
+
             const request = new egret.HttpRequest();
             request.once(egret.Event.COMPLETE, function (event: egret.Event) {
                 var data: any = egret.XML.parse(event.currentTarget.response);
@@ -95,7 +130,8 @@ class Map {
                 this[target].y = posInfo[target].y
 
                 this[target].render()
-                console.log('cache map', target);
+                this[target].name = mapInfo.id
+                console.log('caching map', target, this[target]);
 
 
                 this.layer.addChild(this[target])
