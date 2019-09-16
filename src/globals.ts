@@ -27,7 +27,6 @@ declare namespace Pos {
     interface Info {
         screen: Region
         tile: Region
-        tileIds: TileIds
         region: Region
         user: Region
         patch: Region
@@ -57,7 +56,6 @@ const posInfo: Pos.Info = {
     region: { x: 0, y: 0 },                     // 上海的区域块坐标(后端返回) should return 0 ... 9
     user: { x: 0, y: 0 },                       // 区域块内的坐标(后端返回) return  0 ... 4999
     tile: { x: 0, y: 0 },                       // 用户在前端地图的坐标(由 user 坐标求模计算) shoudl return 0 ... 49
-    tileIds: { self: '1-1.t' },                   // 后端的一个区域块对应的前端地图的id
     cachePatch: { x: 0, y: 0 },                 // 缓存的偏移量
     cacheMapRight: undefined,
     cacheMapLeft: undefined,
@@ -113,7 +111,7 @@ function calcPos() {
     console.debug('main id', self);
     const tileIds: Pos.TileIds = { self }
     tileIds.left = idX <= 0 ? undefined : `${idX - 1}-${idY}.tmx`
-    tileIds.right = (idX > REGIONSIDE / MAPSIDE - 1) ? undefined : `${idX + 1}-${idY}.tmx`
+    tileIds.right = (idX >= REGIONSIDE / MAPSIDE - 1) ? undefined : `${idX + 1}-${idY}.tmx`
     tileIds.up = idY <= 0 ? undefined : `${idX}-${idY - 1}.tmx`
     tileIds.down = (idY >= REGIONSIDE / MAPSIDE - 1) ? undefined : `${idX}-${idY + 1}.tmx`
     // // console.debug('tileIds', tileIds)
@@ -130,6 +128,9 @@ function calcPos() {
     // console.debug('map', map)
     posInfo.map = newMap
 
+    /**
+     * calc cache X
+     */
     const newCacheX: Pos.CacheMap = {
         id: undefined,
         x: undefined,
@@ -155,6 +156,9 @@ function calcPos() {
     console.log('newCacheX', newCacheX);
 
 
+    /**
+     * calc cache Y
+     */
     const newCacheY: Pos.CacheMap = {
         id: undefined,
         x: undefined,
@@ -175,6 +179,33 @@ function calcPos() {
     }
     posInfo.cacheY = newCacheY
     console.log('newCacheY', newCacheY);
+
+
+
+    /**
+     * calc cache Z
+     */
+    const newCacheZ: Pos.CacheMap = {
+        id: undefined,
+        x: undefined,
+        y: undefined,
+        refresh: false
+    }
+    if (newCacheX.id && newCacheY.id) {
+        newCacheZ.id = newCacheX.id.split('-')[0] +'-'+ newCacheY.id.split('-')[1]
+        newCacheZ.x = newCacheX.x
+        newCacheZ.y = newCacheY.y
+    }
+    if (newCacheZ.id !== posInfo.cacheZ.id) {
+        newCacheZ.refresh = true
+    } else {
+        newCacheZ.refresh = false
+    }
+    posInfo.cacheZ = newCacheZ
+    console.log('newCacheZ', newCacheZ);
+
+
+
 
 
 

@@ -65,8 +65,7 @@ class Main extends eui.UILayer {
         await this.loadResource()
         this.init()
         this.map.loadMap(this)
-        this.map.cache2('cacheX')
-        this.map.cache2('cacheY')
+        this.map.cache2()
 
         new Hero().addToStage(this)
         this.addMenu()

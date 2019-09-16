@@ -14,13 +14,12 @@ class Map {
     cacheMapRight: tiled.TMXTilemap
     cacheMapUp: tiled.TMXTilemap
     cacheMapDown: tiled.TMXTilemap
-    lastCacheX: Pos.TildId | undefined
-    lastCacheY: Pos.TildId | undefined
-    lastMapId: Pos.TildId | undefined
 
     cacheX: tiled.TMXTilemap
     cacheY: tiled.TMXTilemap
     cacheZ: tiled.TMXTilemap
+
+    lastReloadTime: number
 
 
     loadMap(layer: eui.UILayer) {
@@ -46,29 +45,40 @@ class Map {
 
         const kb = new KeyBoard();
         kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
-        this.lastMapId = posInfo.map.id
     }
 
     reloadMainMap() {
-        if (this.lastMapId && this.lastMapId !== posInfo.map.id) {
-            console.log('reload');
+        const now = Date.now()
+        if(this.lastReloadTime && now -  this.lastReloadTime < 1000 * 3) {
+            console.log('throttle reloadMainMap');
+            return
+        }
+        if (posInfo.map.refresh && this.map) {
+            this.lastReloadTime = now
+            console.log('reloadMainMap');
             this.map.destory()
-            // this.map = undefined
-            // this.loadMap(this.layer)
+            this.loadMap(this.layer)
+        } else {
+            // console.log('jump main refresh');
         }
     }
-    cache2(target: | 'cacheX' | 'cacheY' | 'cacheZ') {
+    cache2(target?: | 'cacheX' | 'cacheY' | 'cacheZ') {
+        if(!target) {
+            this.cache2('cacheX')
+            this.cache2('cacheY')
+            this.cache2('cacheZ')
+            return
+        }
         this.reloadMainMap()
 
         const mapInfo = posInfo[target]
         // console.log('mapInfo', mapInfo);
 
         if (posInfo[target].refresh) {
-            console.log('try destry', target);
+            console.log('try destory', target);
             if (this[target]) {
                 this[target].destory()
                 console.log('destoryed')
-                return
             }
 
             if (!mapInfo.id) {
@@ -112,34 +122,28 @@ class Map {
                 posInfo.user.y--
                 calcPos()
                 this.map.y = posInfo.map.y
-                this.cache2('cacheY')
-                this.cache2('cacheX')
+                this.cache2()
                 break
             }
             case 'down': {
                 posInfo.user.y++
                 calcPos()
                 this.map.y = posInfo.map.y
-                this.cache2('cacheY')
-                this.cache2('cacheX')
+                this.cache2()
                 break
             }
             case 'left': {
                 posInfo.user.x--
                 calcPos()
                 this.map.x = posInfo.map.x
-                this.cache2('cacheY')
-                this.cache2('cacheX')
-
+                this.cache2()
                 break
             }
             case 'right': {
                 posInfo.user.x++
                 calcPos()
                 this.map.x = posInfo.map.x
-                this.cache2('cacheY')
-                this.cache2('cacheX')
-
+                this.cache2()
                 break
             }
             default:
