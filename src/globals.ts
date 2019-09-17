@@ -117,7 +117,11 @@ function calcPos() {
         [posInfo.cacheX.id]: true,
         [posInfo.cacheY.id]: true,
         [posInfo.cacheZ.id]: true,
+        undefined: false
     }
+
+    console.log('lastdIds', lastdIds);
+
 
     const refreshMain = posInfo.map.id !== self
     const newMap = {

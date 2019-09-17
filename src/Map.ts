@@ -93,6 +93,9 @@ class Map {
                 } else {
                     console.log('destory', target);
                     this[target].destory()
+                    console.log(' this[target', this[target]);
+                    this[target] = null
+
                 }
             }
 
@@ -141,9 +144,11 @@ class Map {
             request.send();
 
         } else {
-            console.log('cached ', target);
-            this[target].x = posInfo[target].x
-            this[target].y = posInfo[target].y
+            if (this[target]) {
+                console.log('cached ', target)
+                this[target].x = posInfo[target].x
+                this[target].y = posInfo[target].y
+            }
         }
 
 
