@@ -146,8 +146,11 @@ class Map {
         } else {
             if (this[target]) {
                 console.log('cached ', target)
-                this[target].x = posInfo[target].x
-                this[target].y = posInfo[target].y
+                const tw = egret.Tween.get(this[target]);
+                // this[target].x = posInfo[target].x
+                // this[target].y = posInfo[target].y
+                tw.to({ x: posInfo[target].x }, DURATION);
+                tw.to({ y: posInfo[target].y }, DURATION);
             }
         }
 
@@ -158,33 +161,38 @@ class Map {
     onkeydown(event: egret.Event) {
 
         const key = event.data.length === 1 ? event.data[0] : 'error'
+        var tw = egret.Tween.get(this.map);
         switch (key) {
             case 'up': {
                 posInfo.user.y--
                 calcPos()
-                this.map.y = posInfo.map.y
+                // this.map.y = posInfo.map.y
                 this.cache2()
+                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             case 'down': {
                 posInfo.user.y++
                 calcPos()
-                this.map.y = posInfo.map.y
+                // this.map.y = posInfo.map.y
                 this.cache2()
+                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             case 'left': {
                 posInfo.user.x--
                 calcPos()
-                this.map.x = posInfo.map.x
+                // this.map.x = posInfo.map.x
                 this.cache2()
+                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             case 'right': {
                 posInfo.user.x++
                 calcPos()
-                this.map.x = posInfo.map.x
+                // this.map.x = posInfo.map.x
                 this.cache2()
+                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             default:

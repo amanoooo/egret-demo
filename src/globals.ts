@@ -1,5 +1,5 @@
 
-const DURATION = 200
+const DURATION = 500
 
 const MAPSIDE = 50
 const TILESIDE = 32
