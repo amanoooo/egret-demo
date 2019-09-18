@@ -120,9 +120,6 @@ function calcPos() {
         undefined: false
     }
 
-    console.log('lastdIds', lastdIds);
-
-
     const refreshMain = posInfo.map.id !== self
     const newMap = {
         x: patched.x * TILESIDE,
@@ -161,7 +158,7 @@ function calcPos() {
     }
 
     posInfo.cacheX = newCacheX
-    console.log('newCacheX', newCacheX);
+    console.debug('newCacheX', newCacheX);
 
 
     /**
@@ -189,7 +186,7 @@ function calcPos() {
         newCacheY.refresh = true
     }
     posInfo.cacheY = newCacheY
-    console.log('newCacheY', newCacheY);
+    console.debug('newCacheY', newCacheY);
 
 
 
@@ -215,7 +212,7 @@ function calcPos() {
         newCacheZ.refresh = false
     }
     posInfo.cacheZ = newCacheZ
-    console.log('newCacheZ', newCacheZ);
+    console.debug('newCacheZ', newCacheZ);
 
 
 

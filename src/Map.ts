@@ -12,7 +12,7 @@ class Map {
     oldcacheY: tiled.TMXTilemap
     oldcacheZ: tiled.TMXTilemap
 
-    lastReloadTime: number
+    kb: KeyBoard
 
 
     loadMap(layer: eui.UILayer) {
@@ -35,8 +35,8 @@ class Map {
         this.layer.setChildIndex(this.map, 0)
 
 
-        const kb = new KeyBoard();
-        kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
+        this.kb = new KeyBoard();
+        this.kb.addEventListener(KeyBoard.onkeydown, this.onkeydown, this);
     }
 
     destoryOldMap() {
@@ -63,6 +63,16 @@ class Map {
         this.cache3('cacheY')
         this.cache3('cacheZ')
 
+        const self = this
+        if (this.map) {
+            var tw = egret.Tween.get(this.map);
+            tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION).call(function () {
+                console.log('finish');
+                if (self.kb.inputs.length > 0) {
+                    self.handleKey('right')
+                }
+            })
+        }
 
         this.oldmap = null
         this.oldcacheX = null
@@ -83,17 +93,16 @@ class Map {
     cache3(target: 'cacheX' | 'cacheY' | 'cacheZ') {
 
         const mapInfo = posInfo[target]
-        // console.log('mapInfo', mapInfo);
+        // console.debug('mapInfo', mapInfo);
 
         if (mapInfo.refresh) {
-            console.log('%s refresh true', target);
+            console.debug('%s refresh true', target);
             if (this[target]) {
                 if (posInfo[target].reserved) {
-                    console.log('skip destory %s', target)
+                    console.debug('skip destory %s', target)
                 } else {
-                    console.log('destory', target);
+                    console.debug('destory', target);
                     this[target].destory()
-                    console.log(' this[target', this[target]);
                     this[target] = null
 
                 }
@@ -105,7 +114,7 @@ class Map {
                 return
             }
 
-            console.log('try cache ', target, mapInfo.id);
+            console.debug('try cache ', target, mapInfo.id);
 
             let isSuccess = false
             isSuccess = this.reloadCache(target, 'cacheX', mapInfo)
@@ -147,57 +156,43 @@ class Map {
             if (this[target]) {
                 console.log('cached ', target)
                 const tw = egret.Tween.get(this[target]);
-                // this[target].x = posInfo[target].x
-                // this[target].y = posInfo[target].y
-                tw.to({ x: posInfo[target].x }, DURATION);
-                tw.to({ y: posInfo[target].y }, DURATION);
+                tw.to({ x: posInfo[target].x, y: posInfo[target].y }, DURATION);
             }
         }
 
 
 
     }
-
-    onkeydown(event: egret.Event) {
-
-        const key = event.data.length === 1 ? event.data[0] : 'error'
-        var tw = egret.Tween.get(this.map);
+    handleKey(key: string) {
+        console.log('handleKey', key);
         switch (key) {
             case 'up': {
                 posInfo.user.y--
-                calcPos()
-                // this.map.y = posInfo.map.y
-                this.cache2()
-                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             case 'down': {
                 posInfo.user.y++
-                calcPos()
-                // this.map.y = posInfo.map.y
-                this.cache2()
-                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             case 'left': {
                 posInfo.user.x--
-                calcPos()
-                // this.map.x = posInfo.map.x
-                this.cache2()
-                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             case 'right': {
                 posInfo.user.x++
-                calcPos()
-                // this.map.x = posInfo.map.x
-                this.cache2()
-                tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION);
                 break
             }
             default:
-                break
+                return
         }
-        // this.cacheMap()
+        calcPos()
+        this.cache2()
+
+        // this.cacheMap() 
+    }
+    onkeydown(event: egret.Event) {
+
+        const key = event.data.length === 1 ? event.data[0] : 'error'
+        this.handleKey(key)
     }
 }
