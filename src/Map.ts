@@ -42,16 +42,22 @@ class Map {
     destoryOldMap() {
 
     }
-    reloadMainMap(target) {
-        if (posInfo.map.refresh && this[target] && (this[target].name === posInfo.map.id)) {
-            this.oldmap = this.map
-            this.map = this[target]
-            this.map.x = posInfo.map.x
-            this.map.y = posInfo.map.y
+    reloadMainMap() {
+        const targets = ['cacheX', 'cacheY', 'cacheZ']
+        for (var key in targets) {
 
+            const target = targets[key]
 
-            console.log('use %s as main map', target, );
+            if (posInfo.map.refresh && this[target] && (this[target].name === posInfo.map.id)) {
+                this.oldmap = this.map
+                this.map = this[target]
+                // this.map.x = posInfo.map.x
+                // this.map.y = posInfo.map.y
+                console.log('use %s as main map', target, );
+                break
+            }
         }
+
     }
 
     onTweenFinish = () => {
@@ -68,15 +74,12 @@ class Map {
             tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION).call(this.onTweenFinish)
         }
     }
-    cache2() {
-        this.reloadMainMap('cacheX')
-        this.reloadMainMap('cacheY')
-        this.reloadMainMap('cacheZ')
+    renderMainMap() {
+        this.reloadMainMap()
 
-
-        this.cache3('cacheX')
-        this.cache3('cacheY')
-        this.cache3('cacheZ')
+        this.renderCache('cacheX')
+        this.renderCache('cacheY')
+        this.renderCache('cacheZ')
 
         this.tweenMove()
 
@@ -90,13 +93,13 @@ class Map {
             this['old' + target] = this[target]
             this[target] = this[possibleTarget]
             console.log('use %s as %s cache', possibleTarget, target);
-            this[target].x = posInfo[target].x
-            this[target].y = posInfo[target].y
+            const tw = egret.Tween.get(this[target]);
+            tw.to({ x: posInfo[target].x, y: posInfo[target].y }, DURATION);
             return true
         }
         return false
     }
-    cache3(target: 'cacheX' | 'cacheY' | 'cacheZ') {
+    renderCache(target: 'cacheX' | 'cacheY' | 'cacheZ') {
 
         const mapInfo = posInfo[target]
         // console.debug('mapInfo', mapInfo);
@@ -124,7 +127,7 @@ class Map {
             let isSuccess = false
             const targets = ['cacheX', 'cacheY', 'cacheZ', 'oldcacheX', 'oldcacheY', 'oldcacheZ', 'oldmap']
             for (var key in targets) {
-                isSuccess = this.reloadCache(target, 'cacheX', mapInfo)
+                isSuccess = this.reloadCache(target, targets[key], mapInfo)
                 if (isSuccess) return
             }
             if (isSuccess) return
@@ -186,7 +189,7 @@ class Map {
                 return
         }
         calcPos()
-        this.cache2()
+        this.renderMainMap()
 
         // this.cacheMap() 
     }
