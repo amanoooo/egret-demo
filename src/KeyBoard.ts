@@ -312,6 +312,7 @@ class KeyBoard extends egret.EventDispatcher {
 				console.log('remove ', key);
 
 				this.inputs.splice(i, 1);
+				// this.bind()
 			}
 		}
 	}

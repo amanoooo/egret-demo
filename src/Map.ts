@@ -49,10 +49,25 @@ class Map {
             this.map.x = posInfo.map.x
             this.map.y = posInfo.map.y
 
+
             console.log('use %s as main map', target, );
         }
     }
 
+    onTweenFinish = () => {
+        console.log('finish', self);
+        if (this.kb.inputs.length > 0) {
+            this.handleKey(this.lastKey)
+        } else {
+            this.kb.bind()
+        }
+    }
+    tweenMove() {
+        if (this.map) {
+            const tw = egret.Tween.get(this.map);
+            tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION).call(this.onTweenFinish)
+        }
+    }
     cache2() {
         this.reloadMainMap('cacheX')
         this.reloadMainMap('cacheY')
@@ -63,16 +78,7 @@ class Map {
         this.cache3('cacheY')
         this.cache3('cacheZ')
 
-        const self = this
-        if (this.map) {
-            var tw = egret.Tween.get(this.map);
-            tw.to({ x: posInfo.map.x, y: posInfo.map.y }, DURATION).call(function () {
-                console.log('finish');
-                if (self.kb.inputs.length > 0) {
-                    self.handleKey('right')
-                }
-            })
-        }
+        this.tweenMove()
 
         this.oldmap = null
         this.oldcacheX = null
@@ -104,7 +110,6 @@ class Map {
                     console.debug('destory', target);
                     this[target].destory()
                     this[target] = null
-
                 }
             }
 
@@ -117,20 +122,13 @@ class Map {
             console.debug('try cache ', target, mapInfo.id);
 
             let isSuccess = false
-            isSuccess = this.reloadCache(target, 'cacheX', mapInfo)
+            const targets = ['cacheX', 'cacheY', 'cacheZ', 'oldcacheX', 'oldcacheY', 'oldcacheZ', 'oldmap']
+            for (var key in targets) {
+                isSuccess = this.reloadCache(target, 'cacheX', mapInfo)
+                if (isSuccess) return
+            }
             if (isSuccess) return
-            isSuccess = this.reloadCache(target, 'cacheY', mapInfo)
-            if (isSuccess) return
-            isSuccess = this.reloadCache(target, 'cacheZ', mapInfo)
-            if (isSuccess) return
-            isSuccess = this.reloadCache(target, 'oldcacheX', mapInfo)
-            if (isSuccess) return
-            isSuccess = this.reloadCache(target, 'oldcacheY', mapInfo)
-            if (isSuccess) return
-            isSuccess = this.reloadCache(target, 'oldcacheZ', mapInfo)
-            if (isSuccess) return
-            isSuccess = this.reloadCache(target, 'oldmap', mapInfo)
-            if (isSuccess) return
+
 
 
             const request = new egret.HttpRequest();
@@ -163,8 +161,10 @@ class Map {
 
 
     }
+    lastKey: string
     handleKey(key: string) {
         console.log('handleKey', key);
+        this.lastKey = key
         switch (key) {
             case 'up': {
                 posInfo.user.y--
